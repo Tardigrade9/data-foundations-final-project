@@ -1,0 +1,706 @@
+---
+title: "CS36 Final Project - Mustafa Hourani"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+Load packages
+```{r}
+library(tidyverse)
+library(modelr)
+```
+
+Imports the Fifa 22 player dataset and stores it into a variable
+```{r}
+fifa22 <- read.csv("players_22.csv")
+#fifa22
+```
+
+Imports the Fifa 21 player dataset and stores it into a variable
+```{r}
+fifa21 <- read.csv("players_21.csv")
+#fifa21
+```
+
+
+--------------------------------------------------------------------------------
+Joins. Progressive joins for each new variable will slowly build up our data tidily.
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and player name
+```{r}
+trial_name_2022 <- fifa22 %>% select(sofifa_id, short_name)
+#trial_name_2022
+
+trial_name_2021 <- fifa21 %>% select(sofifa_id, short_name)
+#trial_name_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 player name as 2022 and the fifa 21 player name as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the player name.
+```{r}
+table_name <- inner_join(trial_name_2022, trial_name_2021, by = "sofifa_id") %>% 
+  rename("2022" = short_name.x, "2021" = short_name.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Name") 
+#table_name
+```
+Creates 2 tibbles, 1 for each Fifa containing id (key) and dob
+```{r}
+trial_dob_2022 <- fifa22 %>% select(sofifa_id, dob)
+#trial_dob_2022
+
+trial_dob_2021 <- fifa21 %>% select(sofifa_id, dob)
+#trial_dob_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 dob as 2022 and the fifa 21 dob as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the dob.
+```{r}
+table_dob <- inner_join(trial_dob_2022, trial_dob_2021, by = "sofifa_id")  %>% rename("2022" = dob.x, "2021" = dob.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Date of Birth") 
+#table_dob
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(table_name, table_dob, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and nationality
+```{r}
+trial_nation_2022 <- fifa22 %>% select(sofifa_id, nationality_name)
+#trial_nation_2022
+
+trial_nation_2021 <- fifa21 %>% select(sofifa_id, nationality_name)
+#trial_nation_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 nationality as 2022 and the fifa 21 nationality as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the nationality
+```{r}
+table_nation <- inner_join(trial_nation_2022, trial_nation_2021, by = "sofifa_id")  %>% rename("2022" = nationality_name.x, "2021" = nationality_name.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Nationality") 
+#table_nation
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_nation, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and preferred foot
+```{r}
+trial_foot_2022 <- fifa22 %>% select(sofifa_id, preferred_foot)
+#trial_foot_2022
+
+trial_foot_2021 <- fifa21 %>% select(sofifa_id, preferred_foot)
+#trial_foot_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 preferred foot as 2022 and the fifa 21 nationality as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the preferred foot.
+```{r}
+table_foot <- inner_join(trial_foot_2022, trial_foot_2021, by = "sofifa_id")  %>% rename("2022" = preferred_foot.x, "2021" = preferred_foot.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Preferred Foot") 
+#table_foot
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_foot, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and age
+```{r}
+trial_age_2022 <- fifa22 %>% select(sofifa_id, age)
+#trial_age_2022
+
+trial_age_2021 <- fifa21 %>% select(sofifa_id, age)
+#trial_age_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 age as 2022 and the fifa 21 age as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the age.
+```{r}
+table_age <- inner_join(trial_age_2022, trial_age_2021, by = "sofifa_id") %>% rename("2022" = age.x, "2021" = age.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Age") 
+#table_age
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_age, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and player position
+```{r}
+trial_positions_2022 <- fifa22 %>% select(sofifa_id, player_positions)
+#trial_positions_2022
+
+trial_positions_2021 <- fifa21 %>% select(sofifa_id, player_positions)
+#trial_positions_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 player position as 2022 and the fifa 21 player position as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the player position.
+```{r}
+table_positions <- inner_join(trial_positions_2022, trial_positions_2021, by = "sofifa_id") %>% rename("2022" = player_positions.x, "2021" = player_positions.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "player_positions") 
+#table_positions
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_positions, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and value
+```{r}
+trial_value_2022 <- fifa22 %>% select(sofifa_id, value_eur)
+#trial_value_2022
+
+trial_value_2021 <- fifa21 %>% select(sofifa_id, value_eur)
+#trial_value_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 player value as 2022 and the fifa 21 player value as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the player value
+```{r}
+table_value <- inner_join(trial_value_2022, trial_value_2021, by = "sofifa_id") %>% rename("2022" = value_eur.x, "2021" = value_eur.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "value_eur") 
+#table_value
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_value, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and weight
+```{r}
+trial_weight_2022 <- fifa22 %>% select(sofifa_id, weight_kg)
+#trial_weight_2022
+
+trial_weight_2021 <- fifa21 %>% select(sofifa_id, weight_kg)
+#trial_weight_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 weight as 2022 and the fifa 21 weight as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the weight.
+```{r}
+table_weight <- inner_join(trial_weight_2022, trial_weight_2021, by = "sofifa_id") %>% rename("2022" = weight_kg.x, "2021" = weight_kg.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Kilogram Weight") 
+#table_weight
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_weight, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and height
+```{r}
+trial_height_2022 <- fifa22 %>% select(sofifa_id, height_cm)
+#trial_height_2022
+
+trial_height_2021 <- fifa21 %>% select(sofifa_id, height_cm)
+#trial_height_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 height as 2022 and the fifa 21 height as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the height
+```{r}
+table_height <- inner_join(trial_height_2022, trial_height_2021, by = "sofifa_id") %>% rename("2022" = height_cm.x, "2021" = height_cm.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Centimeter Height") 
+#table_height
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_height, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and league
+```{r}
+trial_league_2022 <- fifa22 %>% select(sofifa_id, league_name)
+#trial_league_2022
+
+trial_league_2021 <- fifa21 %>% select(sofifa_id, league_name)
+#trial_league_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 league as 2022 and the fifa 21 league as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the league
+```{r}
+table_league <- inner_join(trial_league_2022, trial_league_2021, by = "sofifa_id") %>% rename("2022" = league_name.x, "2021" = league_name.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "league_name") 
+#table_league
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_league, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and club
+```{r}
+trial_club_2022 <- fifa22 %>% select(sofifa_id, club_name)
+#trial_club_2022
+
+trial_club_2021 <- fifa21 %>% select(sofifa_id, club_name)
+#trial_club_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 club as 2022 and the fifa 21 club as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the club
+```{r}
+table_club <- inner_join(trial_club_2022, trial_club_2021, by = "sofifa_id") %>% rename("2022" = club_name.x, "2021" = club_name.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Club") 
+#table_club
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_club, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and date joined
+```{r}
+trial_join_2022 <- fifa22 %>% select(sofifa_id, club_joined)
+#trial_join_2022
+
+trial_join_2021 <- fifa21 %>% select(sofifa_id, club_joined)
+#trial_join_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 date joined as 2022 and the fifa 21 date joined as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the date joined
+```{r}
+table_join <- inner_join(trial_join_2022, trial_join_2021, by = "sofifa_id") %>% rename("2022" = club_joined.x, "2021" = club_joined.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Date Joined Club") 
+#table_join
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_join, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and overall rating
+```{r}
+trial_overall_2022 <- fifa22 %>% select(sofifa_id, overall)
+#trial_overall_2022
+
+trial_overall_2021 <- fifa21 %>% select(sofifa_id, overall)
+#trial_overall_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 overall rating as 2022 and the fifa 21 overall rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the overall rating
+```{r}
+table_overall <- inner_join(trial_overall_2022, trial_overall_2021, by = "sofifa_id") %>% rename("2022" = overall.x, "2021" = overall.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Overall Rating") 
+#table_overall
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_overall, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and weak foot rating
+```{r}
+trial_weak_2022 <- fifa22 %>% select(sofifa_id, weak_foot)
+#trial_weak_2022
+
+trial_weak_2021 <- fifa21 %>% select(sofifa_id, weak_foot)
+#trial_weak_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 weak foot rating as 2022 and the fifa 21 weak foot rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the weak foot rating
+```{r}
+table_weak <- inner_join(trial_weak_2022, trial_weak_2021, by = "sofifa_id") %>% rename("2022" = weak_foot.x, "2021" = weak_foot.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Weak Foot Rating") 
+#table_weak
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_weak, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and skill moves rating
+```{r}
+trial_skill_2022 <- fifa22 %>% select(sofifa_id, skill_moves)
+#trial_skill_2022
+
+trial_skill_2021 <- fifa21 %>% select(sofifa_id, skill_moves)
+#trial_skill_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 skill moves rating as 2022 and the fifa 21 skill moves rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the skill moves rating
+```{r}
+table_skill <- inner_join(trial_skill_2022, trial_skill_2021, by = "sofifa_id") %>% rename("2022" = skill_moves.x, "2021" = skill_moves.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Skill Move Rating") 
+#table_skill
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_skill, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and pace rating
+```{r}
+trial_pace_2022 <- fifa22 %>% select(sofifa_id, pace)
+#trial_pace_2022
+
+trial_pace_2021 <- fifa21 %>% select(sofifa_id, pace)
+#trial_pace_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 pace rating as 2022 and the fifa 21 pace rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the pace rating
+```{r}
+table_pace <- inner_join(trial_pace_2022, trial_pace_2021, by = "sofifa_id") %>% rename("2022" = pace.x, "2021" = pace.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Pace Rating") 
+#table_pace
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_pace, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and shooting rating
+```{r}
+trial_shooting_2022 <- fifa22 %>% select(sofifa_id, shooting)
+#trial_shooting_2022
+
+trial_shooting_2021 <- fifa21 %>% select(sofifa_id, shooting)
+#trial_shooting_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 shooting rating as 2022 and the fifa 21 shooting rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the shooting rating
+```{r}
+table_shooting <- inner_join(trial_shooting_2022, trial_shooting_2021, by = "sofifa_id") %>% rename("2022" = shooting.x, "2021" = shooting.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Shooting Rating") 
+#table_shooting
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_shooting, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and passing rating
+```{r}
+trial_passing_2022 <- fifa22 %>% select(sofifa_id, passing)
+#trial_passing_2022
+
+trial_passing_2021 <- fifa21 %>% select(sofifa_id, passing)
+#trial_passing_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 passing rating as 2022 and the fifa 21 passing rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the passing rating
+```{r}
+table_passing <- inner_join(trial_passing_2022, trial_passing_2021, by = "sofifa_id") %>% rename("2022" = passing.x, "2021" = passing.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Passing Rating") 
+#table_passing
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_passing, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and dribbling rating
+```{r}
+trial_dribbling_2022 <- fifa22 %>% select(sofifa_id, dribbling)
+#trial_dribbling_2022
+
+trial_dribbling_2021 <- fifa21 %>% select(sofifa_id, dribbling)
+#trial_dribbling_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 dribbling rating as 2022 and the fifa 21 dribbling rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the dribbling rating
+```{r}
+table_dribbling <- inner_join(trial_dribbling_2022, trial_dribbling_2021, by = "sofifa_id") %>% rename("2022" = dribbling.x, "2021" = dribbling.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Dribbling Rating") 
+#table_dribbling
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_dribbling, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and defending rating
+```{r}
+trial_defending_2022 <- fifa22 %>% select(sofifa_id, defending)
+#trial_defending_2022
+
+trial_defending_2021 <- fifa21 %>% select(sofifa_id, defending)
+#trial_defending_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 defending rating as 2022 and the fifa 21 defending rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the defending rating
+```{r}
+table_defending <- inner_join(trial_defending_2022, trial_defending_2021, by = "sofifa_id") %>% rename("2022" = defending.x, "2021" = defending.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Defending Rating") 
+#table_defending
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_defending, by = c("sofifa_id", "Year"))
+#final
+```
+
+
+Creates 2 tibbles, 1 for each Fifa containing id (key) and physical rating
+```{r}
+trial_physical_2022 <- fifa22 %>% select(sofifa_id, physic)
+#trial_physical_2022
+
+trial_physical_2021 <- fifa21 %>% select(sofifa_id, physic)
+#trial_physical_2021
+```
+Inner_Joins 2 previous tibbles based on the key (id) and renames the fifa 22 physical rating as 2022 and the fifa 21 physical rating as 2021. Then we pivot in order to tidy the data and create a new column for the fifa year and another column for the physical rating
+```{r}
+table_physical <- inner_join(trial_physical_2022, trial_physical_2021, by = "sofifa_id") %>% rename("2022" = physic.x, "2021" = physic.y) %>% pivot_longer(c("2022", "2021"), names_to = "Year", values_to = "Physical Rating") 
+#table_physical
+```
+Having tidied our 2 previous interim tables, we can now join them based on the combination of player id and year (key) in order to create 2 rows for every player (one for each game year).
+```{r}
+final <- inner_join(final, table_physical, by = c("sofifa_id", "Year"))
+final
+```
+
+
+--------------------------------------------------------------------------------
+Cleaning
+
+Converts value column from Euros to Dollars by using conversion factor of 1.1315
+```{r}
+final <- final %>% mutate("value_eur" = value_eur * 1.1315) %>% rename("Value in $" = value_eur)
+final
+```
+
+Change League names that don't start with League Country to start with League Country in a single word and also ensure consistency in spelling among the nation's other leagues
+```{r}
+final$league_name[final$league_name == "Campeonato Brasileiro Série A"] <- "Brazilian Campeonato Série A"
+final$league_name[final$league_name == "Liga de Fútbol Profesional Boliviano"] <- "Bolivian Liga de Fútbol Profesional"
+final$league_name[final$league_name == "Rep. Ireland Airtricity League"] <- "Irish Airtricity League"
+final$league_name[final$league_name == "South African Premier Division"] <- "South-African Premier Division"
+final$league_name[final$league_name == "Spain Primera Division"] <- "Spanish Primera Division"
+```
+
+Separates league country from league name in columns section
+```{r}
+final <- final %>% separate(league_name, into = c("League Country", "League Name"), sep = " ", extra = "merge")
+final
+```
+
+Groups positions under 3 brackets (Defender / Midfielder / Attacker) based on real life classification of each position as either Defence/Midfield/Attack. ^ ensures we look at first appearance of key letters and (.)* let's us know anything can come after our key letters and it won't matter.
+```{r}
+final <- final %>% rename("Position" = player_positions)
+
+final$Position <- str_replace_all(final$Position, "^CB(.)*", "Defender")
+final$Position <- str_replace_all(final$Position, "^LB(.)*", "Defender")
+final$Position <- str_replace_all(final$Position, "^LWB(.)*", "Defender")
+final$Position <- str_replace_all(final$Position, "^RB(.)*", "Defender")
+final$Position <- str_replace_all(final$Position, "^RWB(.)*", "Defender")
+
+final$Position <- str_replace_all(final$Position, "^CAM(.)*", "Midfielder")
+final$Position <- str_replace_all(final$Position, "^CDM(.)*", "Midfielder")
+final$Position <- str_replace_all(final$Position, "^CM(.)*", "Midfielder")
+final$Position <- str_replace_all(final$Position, "^LM(.)*", "Midfielder")
+final$Position <- str_replace_all(final$Position, "^RM(.)*", "Midfielder")
+
+final$Position <- str_replace_all(final$Position, "^CF(.)*", "Attacker")
+final$Position <- str_replace_all(final$Position, "^LW(.)*", "Attacker")
+final$Position <- str_replace_all(final$Position, "^RW(.)*", "Attacker")
+final$Position <- str_replace_all(final$Position, "^ST(.)*", "Attacker")
+
+final
+```
+
+Remove non-outfield players (goalkeepers)
+```{r}
+final <- final %>% filter(Position != "GK")
+final
+```
+
+Parsing. 
+```{r}
+final$Year <- parse_integer(final$Year)
+final$`Date of Birth` <- parse_date(final$`Date of Birth`, "%Y-%m-%d")
+final$`Date Joined Club` <- parse_date(final$`Date Joined Club`, "%Y-%m-%d")
+final
+```
+
+Additional column rename, rename to ID for simplicity
+```{r}
+final <- final %>% rename("ID" = sofifa_id, )
+final
+```
+
+
+--------------------------------------------------------------------------------
+
+**QUESTION 1**
+
+After the pandemic (2021), Fifa (the footballing organization) decided to condense a normal football season into a shortened time frame which almost doubled the amount of matches professional footballers played every week. Many managers like Pep Guardiola were furious and said this negatively affected the physical condition of the players who were overworked. 
+
+Does the data set in Fifa reflect this real life theory? Is the average Physical Rating lower in Fifa 21 compared to Fifa 22? Was the average Overall Rating also lower in Fifa 21 as a result of a lack of practice? Were the players also slower during the condensed season?
+
+
+Create a table for average of each of (Physical/Pace/Overall) ratings. Inner join these 3 average tables into a single table with all 3 using Year as the key. Then we pivot in order to tidy the data and create a new column for the Rating Type and another column for the Value. We do this since all these 3 averages are of the same type of objects. 
+```{r}
+avg_physical <- final %>% group_by(Year) %>% summarize("Average Physical" = mean(`Physical Rating`, na.rm = TRUE))
+avg_physical
+
+avg_pace <- final %>% group_by(Year) %>% summarize("Average Pace" = mean(`Pace Rating`, na.rm = TRUE))
+avg_pace
+
+avg_overall <- final %>% group_by(Year) %>% summarize("Average Overall" = mean(`Overall Rating`, na.rm = TRUE))
+avg_overall
+
+avg_table <- inner_join(avg_physical, avg_pace, by = "Year") %>% inner_join(avg_overall, by = "Year")
+avg_table
+
+avg_table <- avg_table %>% pivot_longer(c("Average Physical", "Average Pace", "Average Overall"), names_to = "Rating Type", values_to = "Value")
+avg_table
+```
+
+Change column type for year to categorical (char) in order to group bar chart next. 
+```{r}
+avg_table$Year <- as.character(avg_table$Year)
+avg_table
+```
+
+Visualize bar chart, x represents Rating type and y represents Value, we use Year as a fill in order to create a grouped bar chart.
+```{r}
+ggplot(data = avg_table, mapping = aes(x = `Rating Type`, y = Value, fill = Year)) + 
+  geom_bar(stat = "identity", position = position_dodge(width=0.8), width = 0.7)
+```
+
+
+--------------------------------------------------------------------------------
+
+**QUESTION 2**
+
+There is a theory among soccer fans that the Italian league is more defensive minded than other leagues. Is this theory reflected in the Fifa 22 dataset?
+
+Restrict to Europe's top 5 leagues to compare defensive stats of Italian league to similar levelled leagues. The reason we specify Seria A and Italian is because there is an Ecuadorian Seria A which we don't care about. The reason we specify Premier League and English is because there are also non-Enlgish Premier League which we don't care about.
+```{r}
+top5 <- final %>% 
+  filter(`League Name` == "1. Bundesliga" | (`League Name` == "Serie A" & `League Country` == "Italian") | (`League Name` == "Premier League" & `League Country` == "English") | `League Name` == "Ligue 1" | `League Name` == "Primera Division")
+top5
+```
+
+Create a model for all players in top 5 leagues
+```{r}
+general_model <- lm(`Defending Rating` ~ `League Country`, data = top5)
+general_model
+```
+Creates a data grid with distinct league country options
+```{r}
+sim1 <- top5 %>% data_grid(`League Country`)
+sim1
+```
+Data_grid creates a tibble with only distinct leagues which we then add our model predictions to for each league.
+```{r}
+grid_pred1 <- sim1 %>% 
+  data_grid(`League Country`) %>% 
+  add_predictions(general_model) %>% 
+  rename("General Predicted Defensive Rating" = pred)
+grid_pred1 
+```
+
+Creates a tibble with every possible combination of League Country and Position.
+```{r}
+top5_grouped <- top5 %>% group_by(`League Country`, Position) %>% summarise(`Defending Rating`)
+top5_grouped 
+```
+Model for defenders in top 5 leagues, we are considering two x variables without interactions
+```{r}
+grouped_model <- lm(`Defending Rating` ~ `League Country` + Position, data = top5_grouped)
+grouped_model
+```
+Creates a data grid with distinct league country options
+```{r}
+sim2 <- top5_grouped %>% data_grid(`League Country`)
+sim2
+```
+Data_grid creates a tibble with only distinct league and position combinations which we then add our model predictions to for each league/position combination. We then filter for only defensive players since we want to see how defensive players in Italian league compare to defensive players in other top 5 leagues.
+```{r}
+grid_pred2 <- top5_grouped %>% 
+  data_grid(`League Country`) %>% 
+  add_predictions(grouped_model) %>% 
+  rename("Defender Predicted Defensive Rating" = pred) %>%
+  filter(Position == "Defender")
+grid_pred2
+```
+
+Visualize bar chart for general players. We reorder our x (League Country) bars in ascending order of their General Predicted Defensive Ratings
+```{r}
+ggplot(data = grid_pred1, mapping = aes(x = fct_reorder(`League Country`, `General Predicted Defensive Rating`), y = `General Predicted Defensive Rating`)) + 
+  geom_bar(stat = "identity", fill = "blue", width = 0.8) +
+  xlab("League Country")
+```
+
+Visualize bar chart for defenders We reorder our x (League Country) bars in ascending order of their Defender Predicted Defensive Ratings
+```{r}
+ggplot(data = grid_pred2, mapping = aes(x = fct_reorder(`League Country`, `Defender Predicted Defensive Rating`), y = `Defender Predicted Defensive Rating`)) + 
+  geom_bar(stat = "identity", fill = "black", width = 0.8) +
+  xlab("League Country")
+```
+
+
+--------------------------------------------------------------------------------
+
+**QUESTION 3**
+
+A widely held theory in soccer is that shorter players have an advantage when it comes to ball control, as they tend to have a lower center of gravity and can therefore control the ball with their feet easier. Is this theory reflected in the Fifa dataset?
+
+
+Create a model for dribbling rating in terms of height
+```{r}
+control_model <- lm(`Dribbling Rating` ~ `Centimeter Height`, data = final)
+control_model
+```
+
+Creates a data grid with all distinct values for height
+```{r}
+grid_table <- final %>% data_grid(`Centimeter Height`)
+grid_table
+```
+
+Adds predictions for dribbling rates for each distinct height based on our model.
+```{r}
+control_pred <- final %>% 
+  data_grid(`Centimeter Height`) %>% 
+  add_predictions(control_model)
+control_pred 
+```
+
+Plots a scatter plot of a relationship between player height and dribbling rating. We then add a line of best fit based on our model that looks at the same x variable (height) but uses predicted values as y instead of actual dribbling ratings.
+```{r}
+ggplot(data = final) + 
+  geom_point(mapping = aes(x = `Centimeter Height`, y = `Dribbling Rating`)) +
+  geom_line(mapping = aes(x = `Centimeter Height`, y = pred), data = control_pred, color = "red", size = 1)
+```
+
+
+--------------------------------------------------------------------------------
+
+**Write Up**
+
+*Introduction*
+Fifa is company that launches a new video game every year which allows its users to simulate real life soccer by controlling players in-game that play for real life teams. Fifa prides itself in creating a realistic game experience that captures the nuances of real life soccer within its digital boundaries. I decided to test 3 widely agreed upon (leaning towards the un-controversial side of things) real-life theories about the game and see if Fifa reflects these theories within the game in order to help facilitate the real-life experience. 
+
+The questions I asked were the following:
+
+1- After the pandemic (2021), Fifa (the footballing organization) decided to condense a normal football season into a shortened time frame which almost doubled the amount of matches professional footballers played every week. Many managers like Pep Guardiola were furious and said this negatively affected the physical condition of the players who were overworked. Does the data set in Fifa reflect this real life theory? Is the average Physical Rating lower in Fifa 21 compared to Fifa 22? Was the average Overall Rating also lower in Fifa 21 as a result of a lack of practice? Were the players also slower during the condensed season?
+
+2- There is a theory among soccer fans that the Italian league is more defensive minded than other leagues. Is this theory reflected in the Fifa 22 dataset?
+
+3- A widely held theory in soccer is that shorter players have an advantage when it comes to ball control, as they tend to have a lower center of gravity and can therefore control the ball with their feet easier. Is this theory reflected in the Fifa dataset?
+
+While I will delve deeper into the results in the conclusion section, I will briefly mention that I discovered that Fifa did a good job reflecting the truths of these theories within their game mechanics, however, for one of the theories, I think they could have done a better job accentuating its truth.
+
+*Data Source*
+I obtained my datasets from a complete player Dataset for Fifa 22 and Fifa 21 on the website Kaggle. The information on these datasets were obtained by web scraping from the website "Sofifa". Web scraping is the process of extracting information from websites using data analytic tools. The person who published this data is Stefano Leone who is an experience data analyst who has multiple certifications for data related skills. 
+
+Sofifa obtains its data by directly extracting information from the video game Fifa and publishing it on their website. Fifa has direct legal access to all player names, club names, and player information. As professional footballers, these players agree to provide Fifa with personal information such as height and weight.
+
+Here is a link to the dataset: https://www.kaggle.com/stefanoleone992/fifa-22-complete-player-dataset/version/3?select=players_22.csv
+
+*Data Ethics*
+Given the fact that this dataset is obtained entirely from a website based on a video game, which then obtains all of its information from the official body of soccer, I think the ethical considerations of this study are not as pertinent as other studies which might look at more serious topics like medicine or law. However, this is not to say that the ethical considerations do not exist. 
+
+While soccer players agree to provide public access to a lot of personal information about themselves like their height or weight, studies which can then go and analyze a lot of this information can cause these footballers (who are major stakeholders) moral degradation. For example, some of the attributes in the dataset listed some footballers as "Injury Prone" which is a negative classification and can cause stress on many of these footballers. Furthermore, studies which then go and compare different ratings of different footballers in order to rank them can make these footballers feel less like humans and more like products which dehumanizes them.
+
+To another degree, I think people can use some of this data to propagate racist ideas. Specifically, there are many nationalities from Asia that have lower overall players ratings (especially in India and China). Someone who wants to promote racism might then go and deduce from this fact that Indians and Chinese people are inferior at soccer and are therefore not as athletic as people from European nations for example. However, this data does not take into account the fact that many of these Asian countries are very athletic, they just excel at other sports like Cricket or Ping Pong for example. As a student of CS36, I would be able to point out the holes in the racist person's argument as there limitations to how broadly applicable the findings are, however, other people who are not as familiar with data might not realize what this person is doing.
+
+*Conclusions*
+1- After investigating if the physical conditions of the players was negatively affected during the pandemic season was reflected in the game, I noticed that there was in fact a blip in some general player ratings in Fifa 21 as compared to Fifa 22. The average physical rating in Fifa 21 was 65.57 compared to the average physical rating of 66.99 in Fifa 22 showing a clear increase in the new game resulting from a more normal training schedule. The average pace rating in Fifa 21 was 68.52 compared to the average pace rating of 68.68 in Fifa 22. This increase is negligible so it does not appear the speed of players was affected during the pandemic season. Finally, the average overall rating in Fifa 21 was 67.13 compared to the average overall rating in Fifa 22 of 68.06. This increase could very well be from a more regular traning schedule leading to better rating.
+
+It must be noted that these conclusions are not certain. All 3 increases from Fifa 21 to Fifa 22 could may have well resulted from other factors as this was not an isolated study in a lab, and more of a correlation analysis. I will say though, from my experience, I saw that the pandemic season did really take a toll on many players after seeing more frequent injuries, so I would have expected a bigger blip in physical condition ratings for players in Fifa 21 as compared to Fifa 22. Finally, all conclusions that we draw from this study can be used to make inferences about the players within the game, and not in real life. While it is interesting to examine real-life/game differences and similarities, it must be made explicit that these conclusions are applicable only to inferences about the players within the game.
+
+2- After investigating if Fifa reflects the theory that the Italian league is more defensive than other leagues, the data strongly supported that conclusion. Based on the data, our model revealed that the General Predicted Defensive Rating was 60.09 for the Italian league which was the highest out of all top 5 leagues (followed by England with 59.92, Spain with 58.75, Germany with 57.62, and France with 56.07). The average Italian player would generally have a higher defensive rating than a player from another league. Our model also revealed that the Defensive Predicted Defensive Rating was 74.36 for the Italian league which was the highest out of all top 5 leagues (followed by Spain with 73.05, England with 72.76, Germany with 70.88, and France with 69.85). Even for players who were specifically defenders, the average Italian would generally have a higher defensive rating than a player from another league. 
+
+It seems pretty fair to say that the Italian league is more defensive than other leagues within the game of Fifa. I must reiterate that conclusions drawn from this study are applicable towards the game rather than real life, even if it seems interesting to apply it to real life. We cannot not yet say that the Italian League in real life is more defensive than other leagues using evidence from this study alone. 
+
+3- After investigating if Fifa reflects the theory that shorter players tend to have better dribbling, it appears that the game supports that theory. I plotted the relationship between height (x-axis) and dribbling rating (y-axis) and derived a linear model which gave me a negative slope of 0.6. This suggests that the data shows that as a player's height increases, the dribbling rating tends to decrease. 
+
+That being said, we can't be 100% certain and attribute this inverse relationship due to low center of gravity. While it is very likely that is the case, based on the variables we have available to us, we can only infer the existence of an inverse relationship between both variables within the game, and not in real life for the reasons I mentioned for the previous 2 questions.
+
+If a person wanted to go a step further and make deductions about the real life players, the next step would be to acquire more real life information by testing the player's performance in a real life setting and then performing data analysis on that. However, we must abide by the rules of statistics when doing so and ensure we cover basic guidelines like taking random samples of footballers rather than handpicking which players we choose to perform tests on.
+
